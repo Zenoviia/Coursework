@@ -1,0 +1,110 @@
+body, html {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#game-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: auto;
+}
+
+#game {
+    display: grid;
+    grid-template-columns: repeat(3, 550px);
+    grid-template-rows: repeat(3, 550px);
+    gap: 2px;
+    border: 2px solid black;
+    margin-bottom: 20px;
+}
+
+.cell {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid black;
+    font-size: 100px;
+}
+
+#result {
+    font-size: 100px;
+    position: absolute;
+    bottom: 85%;
+}
+
+#restart,
+#undo {
+    width: 300px;
+    height: 100px;
+    position: absolute;
+    bottom: 13%;
+    font-size: 60px;
+}
+
+#restart {
+    left: calc(50% - 325px);
+}
+
+#undo {
+    right: calc(50% - 325px);
+}
+
+#scoreboard {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+    margin-bottom: 20px;
+    font-size: 60px;
+}
+
+#rulesModal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #fff;
+    padding: 20px;
+    border: 2px solid #000;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    z-index: 9999;
+    width: 2000px;
+    height: 2500px; 
+    font-size: 70px;
+    border-radius: 1%;
+    padding-left: 100px;
+}
+
+#showRulesBtn {
+    position: fixed;
+    top: 50px;
+    right: 50px;
+    z-index: 9999;
+    font-size: 100px;
+    width: 200px; 
+    height: 200px; 
+    border-radius: 15%;
+}
+
+#closeRulesBtn {
+    position: absolute;
+    top: 50px;
+    right: 50px;
+    font-size: 70px;
+    font-weight: bold;
+    background-color: #ff0000;
+    color: #ffffff;
+    border-radius: 15px;
+    cursor: pointer;
+    outline: none;
+    transition: background-color 0.3s ease;
+    width: 100px;
+    height: 100px; 
+}
+
+#rulesModal h2 {
+    text-align: center;
+}
