@@ -24,31 +24,20 @@ const gameStates = {
   moveHistory: [],
 };
 
-showRulesBtn.addEventListener('click', showRulesModal);
-closeRulesBtn.addEventListener('click', hideRulesModal);
-restartBtn.addEventListener('click', restartGame);
-undoBtn.addEventListener('click', undoMove);
-
-document.addEventListener('keydown', (event) => {
-  if (event.key === 'Escape') {
-    hideRulesModal();
-  }
-});
-
-function showRulesModal() {
+const showRulesModal = () => {
   rulesModal.style.display = 'block';
-}
+};
 
-function hideRulesModal() {
+const hideRulesModal = () => {
   rulesModal.style.display = 'none';
-}
+};
 
-function restartGame() {
+const restartGame = () => {
   resetGameState();
   render();
 }
 
-function resetGameState() {
+const resetGameState = () => {
   gameStates.currentPlayer = 'X';
   gameStates.board = Array(9).fill('');
   gameStates.gameOver = false;
@@ -56,7 +45,7 @@ function resetGameState() {
   gameStates.moveHistory = [];
 }
 
-function undoMove() {
+const undoMove = () => {
   const hasHistory = gameStates.moveHistory.length > 0;
   if (hasHistory && !gameStates.gameOver) {
     const lastMove = gameStates.moveHistory.pop();
@@ -70,7 +59,7 @@ function undoMove() {
   }
 }
 
-function render() {
+const render = () => {
   gameContainer.innerHTML = '';
   gameStates.board.forEach((value, index) => {
     const cell = document.createElement('div');
@@ -85,7 +74,7 @@ function render() {
 }
 render();
 
-function handleClick(index) {
+const handleClick = (index) => {
   if (gameStates.gameOver || gameStates.board[index] !== '') return;
 
   gameStates.board[index] = gameStates.currentPlayer;
@@ -103,7 +92,7 @@ function handleClick(index) {
   }
 }
 
-function endGame(winner) {
+const endGame = (winner) => {
   if (winner === 'tie') {
     resultDiv.textContent = 'It`s a tie!';
     gameStates.ties++;
@@ -121,7 +110,7 @@ function endGame(winner) {
   gameStates.gameOver = true;
 }
 
-function makeComputerMove() {
+const makeComputerMove = () => {
   const emptyCells = gameStates.board.reduce((acc, cell, index) => {
     if (cell === '') acc.push(index);
     return acc;
@@ -151,11 +140,11 @@ function makeComputerMove() {
   }
 }
 
-function switchPlayer() {
+const switchPlayer = () => {
   gameStates.currentPlayer = gameStates.currentPlayer === 'X' ? 'O' : 'X';
 }
 
-function checkWinningMove(player) {
+const checkWinningMove = (player) => {
   for (const combination of WINNING_COMB) {
     const [a, b, c] = combination;
     const isPlayerA = gameStates.board[a] === player;
@@ -180,7 +169,7 @@ function checkWinningMove(player) {
   return null;
 }
 
-function checkWinner() {
+const checkWinner = () => {
   for (const combination of WINNING_COMB) {
     const [a, b, c] = combination;
     const cellA = gameStates.board[a];
@@ -197,3 +186,14 @@ function checkWinner() {
   const isBoardFull = gameStates.board.every((cell) => cell !== '');
   return isBoardFull ? 'tie' : null;
 }
+
+showRulesBtn.addEventListener('click', showRulesModal);
+closeRulesBtn.addEventListener('click', hideRulesModal);
+restartBtn.addEventListener('click', restartGame);
+undoBtn.addEventListener('click', undoMove);
+
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') {
+    hideRulesModal();
+  }
+});
