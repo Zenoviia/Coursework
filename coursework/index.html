@@ -1,42 +1,52 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Tic Tac Toe</title>
-    <link rel="stylesheet" href="styles.css">
-</head>
-<body>
-
-<div id="game-container">
-    <div id="scoreboard">
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div id="game-container">
+      <div id="scoreboard">
         <div>X Wins: <span id="xWins">0</span></div>
         <div>O Wins: <span id="oWins">0</span></div>
         <div>Ties: <span id="ties">0</span></div>
-    </div>
-    <div id="game"></div>
-    <div id="result"></div>
-    <button id="restart">Restart</button>
-    <button id="undo">Undo</button>
-    <button id="showRulesBtn">i</button>
-    <div class="overlay" id="overlay"></div>
-    <div id="rulesModal" style="display: none;">
+      </div>
+      <div id="game"></div>
+      <div id="result"></div>
+      <button id="restart">Restart</button>
+      <button id="undo">Undo</button>
+      <button id="showRulesBtn">i</button>
+      <div class="overlay" id="overlay"></div>
+      <div id="rulesModal" style="display: none">
         <h2>Rules and description of the game</h2>
-        <p><b>Tic-tac-toe</b> is a game for two players who take turns marking the spaces in a three-by-three grid with X or O. The player who succeeds in placing three of their marks in a horizontal, vertical, or diagonal row is the winner.</p>
+        <p>
+          <b>Tic-tac-toe</b> is a game for two players who take turns marking
+          the spaces in a three-by-three grid with X or O. The player who
+          succeeds in placing three of their marks in a horizontal, vertical, or
+          diagonal row is the winner.
+        </p>
         <ul>
-            <li>Rule 1: The game takes place in a 3x3 field.</li>
-            <li>Rule 2: The game involves two players (in this case - the user and the computer).</li>
-            <li>Rule 3: Players take turns taking turns.</li>
-            <li>Rule 4: The player playing Xs starts first.</li>
+          <li>Rule 1: The game takes place in a 3x3 field.</li>
+          <li>
+            Rule 2: The game involves two players (in this case - the user and
+            the computer).
+          </li>
+          <li>Rule 3: Players take turns taking turns.</li>
+          <li>Rule 4: The player playing Xs starts first.</li>
         </ul>
         <p>Two buttons are available in the game - Restart and Undo.</p>
         <p>Restart* - starts the game from the beginning.</p>
-        <p>Undo* - undoes one last move of each player (however, it does not work after the end of the game, that is, the announcement of the winner).</p>
+        <p>
+          Undo* - undoes one last move of each player (however, it does not work
+          after the end of the game, that is, the announcement of the winner).
+        </p>
         <button id="closeRulesBtn">Х</button>
+      </div>
     </div>
-</div>
 
-<script src="main.js"></script>
-
-</body>
+    <script type="module" src="main.js"></script>
+    <script type="module" src="constants.js"></script>
+  </body>
 </html>

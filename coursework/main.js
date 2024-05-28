@@ -1,164 +1,199 @@
 'use strict';
 
-const gameContainer = document.getElementById('game');
-const resultDiv = document.getElementById('result');
-const restartBtn = document.getElementById('restart');
-const undoBtn = document.getElementById('undo');
-const xWinsSpan = document.getElementById('xWins');
-const oWinsSpan = document.getElementById('oWins');
-const tiesSpan = document.getElementById('ties');
-const showRulesBtn = document.getElementById('showRulesBtn');
-const rulesModal = document.getElementById('rulesModal');
-const closeRulesBtn = document.getElementById('closeRulesBtn');
-const overlay = document.getElementById('overlay');
+import {
+  gameContainer,
+  resultDiv,
+  restartBtn,
+  undoBtn,
+  xWinsSpan,
+  oWinsSpan,
+  tiesSpan,
+  showRulesBtn,
+  rulesModal,
+  closeRulesBtn,
+  WINNING_COMB,
+} from './constants.js';
 
-let xWins = 0;
-let oWins = 0;
-let ties = 0;
-let currentPlayer = 'X';
-let board = Array(9).fill('');
-let gameOver = false;
-let moveHistory = [];
+const gameStates = {
+  xWins: 0,
+  oWins: 0,
+  ties: 0,
+  currentPlayer: 'X',
+  board: Array(9).fill(''),
+  gameOver: false,
+  moveHistory: [],
+};
 
-showRulesBtn.addEventListener('click', () => {
-    rulesModal.style.display = 'block';
-});
-
-closeRulesBtn.addEventListener('click', () => {
-    rulesModal.style.display = 'none';
-});
+showRulesBtn.addEventListener('click', showRulesModal);
+closeRulesBtn.addEventListener('click', hideRulesModal);
+restartBtn.addEventListener('click', restartGame);
+undoBtn.addEventListener('click', undoMove);
 
 document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape') {
-        rulesModal.style.display = 'none';
-    }
+  if (event.key === 'Escape') {
+    hideRulesModal();
+  }
 });
 
-restartBtn.addEventListener('click', () => {
-    currentPlayer = 'X';
-    board = Array(9).fill('');
-    gameOver = false;
-    resultDiv.textContent = '';
-    moveHistory = [];
-    render();
-});
+function showRulesModal() {
+  rulesModal.style.display = 'block';
+}
 
-undoBtn.addEventListener('click', () => {
-    if (moveHistory.length > 0 && !gameOver) {
-        const lastMove = moveHistory.pop();
-        board[lastMove] = '';
+function hideRulesModal() {
+  rulesModal.style.display = 'none';
+}
 
-        if (moveHistory.length > 0) {
-            const prevMove = moveHistory.pop();
-            board[prevMove] = '';
-            currentPlayer = board[prevMove] === 'X' ? 'O' : 'X';
-        }
+function restartGame() {
+  resetGameState();
+  render();
+}
 
-        render();
+function resetGameState() {
+  gameStates.currentPlayer = 'X';
+  gameStates.board = Array(9).fill('');
+  gameStates.gameOver = false;
+  resultDiv.textContent = '';
+  gameStates.moveHistory = [];
+}
+
+function undoMove() {
+  const hasHistory = gameStates.moveHistory.length > 0;
+  if (hasHistory && !gameStates.gameOver) {
+    const lastMove = gameStates.moveHistory.pop();
+    gameStates.board[lastMove] = '';
+    const prevMove = gameStates.moveHistory.pop();
+    if (prevMove !== undefined) {
+      gameStates.board[prevMove] = '';
+      gameStates.currentPlayer = gameStates.board[prevMove] === 'X' ? 'O' : 'X';
     }
-});
-
-const checkWinner = () => {
-    const winningCombinations = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
-    ];
-
-    for (const [a, b, c] of winningCombinations) {
-        if (board[a] && board[a] === board[b] && board[a] === board[c]) {
-            return board[a];
-        }
-    }
-
-    return board.every(cell => cell !== '') ? 'tie' : null;
-}
-
-const handleClick = (index) => {
-    if (gameOver || board[index] !== '') return;
-
-    board[index] = currentPlayer;
-    moveHistory.push(index);
     render();
-    const winner = checkWinner();
-
-    winner ? displayWinner(winner) : (currentPlayer = currentPlayer === 'X' ? 'O' : 'X', !gameOver && currentPlayer === 'O' && makeComputerMove());
-
+  }
 }
 
-const displayWinner = (winner) => {
-    resultDiv.textContent = winner === 'tie' ? 'It`s a tie!' : `${winner} won!`;
-    winner === 'tie' ? (ties++, tiesSpan.textContent = ties) :
-    winner === 'X' ? (xWins++, xWinsSpan.textContent = xWins) :
-    (oWins++, oWinsSpan.textContent = oWins);
-    gameOver = true;
-}
-
-const checkWinningMove = (player) => {
-    const possibleWins = [
-        [0, 1, 2],
-        [3, 4, 5],
-        [6, 7, 8],
-        [0, 3, 6],
-        [1, 4, 7],
-        [2, 5, 8],
-        [0, 4, 8],
-        [2, 4, 6]
-    ];
-
-    for (const [a, b, c] of possibleWins) {
-        if (board[a] === player && board[b] === player && board[c] === '') {
-            return c;
-        }
-        if (board[a] === player && board[c] === player && board[b] === '') {
-            return b;
-        }
-        if (board[b] === player && board[c] === player && board[a] === '') {
-            return a;
-        }
+function render() {
+  gameContainer.innerHTML = '';
+  gameStates.board.forEach((value, index) => {
+    const cell = document.createElement('div');
+    cell.classList.add('cell');
+    cell.textContent = value;
+    if (value !== '') {
+      cell.style.backgroundColor = '#DCDCDC';
     }
-
-    return -1;
+    cell.addEventListener('click', () => handleClick(index));
+    gameContainer.appendChild(cell);
+  });
 }
-
-const makeComputerMove = () => {
-    let emptyCells = board.reduce((acc, cell, index) => {
-        if (cell === '') acc.push(index);
-        return acc;
-    }, []);
-
-    let winningMove = checkWinningMove('O');
-    let blockingMove = checkWinningMove('X');
-    
-    let moveIndex = winningMove !== -1 ? winningMove :
-                    blockingMove !== -1 ? blockingMove :
-                    emptyCells[Math.floor(Math.random() * emptyCells.length)];
-    
-    board[moveIndex] = 'O';
-    moveHistory.push(moveIndex);
-    render();
-
-    const winner = checkWinner();
-    winner ? displayWinner(winner) : currentPlayer = 'X';
-}
-
-const render = () => {
-    gameContainer.innerHTML = '';
-    board.forEach((value, index) => {
-        const cell = document.createElement('div');
-        cell.classList.add('cell');
-        cell.textContent = value;
-        if (value !== '') {
-            cell.style.backgroundColor = '#DCDCDC';
-        }
-        cell.addEventListener('click', () => handleClick(index));
-        gameContainer.appendChild(cell);
-    });
-}
-
 render();
+
+function handleClick(index) {
+  if (gameStates.gameOver || gameStates.board[index] !== '') return;
+
+  gameStates.board[index] = gameStates.currentPlayer;
+  gameStates.moveHistory.push(index);
+  render();
+
+  const winner = checkWinner();
+  if (winner) {
+    endGame(winner);
+  } else {
+    switchPlayer();
+    if (gameStates.currentPlayer === 'O') {
+      makeComputerMove();
+    }
+  }
+}
+
+function endGame(winner) {
+  if (winner === 'tie') {
+    resultDiv.textContent = 'It`s a tie!';
+    gameStates.ties++;
+    tiesSpan.textContent = gameStates.ties;
+  } else {
+    resultDiv.textContent = `${winner} won!`;
+    if (winner === 'X') {
+      gameStates.xWins++;
+      xWinsSpan.textContent = gameStates.xWins;
+    } else {
+      gameStates.oWins++;
+      oWinsSpan.textContent = gameStates.oWins;
+    }
+  }
+  gameStates.gameOver = true;
+}
+
+function makeComputerMove() {
+  const emptyCells = gameStates.board.reduce((acc, cell, index) => {
+    if (cell === '') acc.push(index);
+    return acc;
+  }, []);
+
+  const winningMove = checkWinningMove('O');
+  const blockingMove = checkWinningMove('X');
+
+  let moveIndex;
+  if (winningMove) {
+    moveIndex = winningMove;
+  } else if (blockingMove) {
+    moveIndex = blockingMove;
+  } else {
+    moveIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+  }
+
+  gameStates.board[moveIndex] = 'O';
+  gameStates.moveHistory.push(moveIndex);
+  render();
+
+  const winner = checkWinner();
+  if (winner) {
+    endGame(winner);
+  } else {
+    switchPlayer();
+  }
+}
+
+function switchPlayer() {
+  gameStates.currentPlayer = gameStates.currentPlayer === 'X' ? 'O' : 'X';
+}
+
+function checkWinningMove(player) {
+  for (const combination of WINNING_COMB) {
+    const [a, b, c] = combination;
+    const isPlayerA = gameStates.board[a] === player;
+    const isPlayerB = gameStates.board[b] === player;
+    const isPlayerC = gameStates.board[c] === player;
+
+    const isEmptyA = gameStates.board[a] === '';
+    const isEmptyB = gameStates.board[b] === '';
+    const isEmptyC = gameStates.board[c] === '';
+
+    if (isPlayerA && isPlayerB && isEmptyC) {
+      return c;
+    }
+    if (isPlayerA && isPlayerC && isEmptyB) {
+      return b;
+    }
+    if (isPlayerB && isPlayerC && isEmptyA) {
+      return a;
+    }
+  }
+
+  return null;
+}
+
+function checkWinner() {
+  for (const combination of WINNING_COMB) {
+    const [a, b, c] = combination;
+    const cellA = gameStates.board[a];
+    const cellB = gameStates.board[b];
+    const cellC = gameStates.board[c];
+
+    const isWinningCombination = cellA && cellA === cellB && cellA === cellC;
+
+    if (isWinningCombination) {
+      return cellA;
+    }
+  }
+
+  const isBoardFull = gameStates.board.every((cell) => cell !== '');
+  return isBoardFull ? 'tie' : null;
+}
