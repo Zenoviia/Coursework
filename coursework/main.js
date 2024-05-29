@@ -35,7 +35,7 @@ const hideRulesModal = () => {
 const restartGame = () => {
   resetGameState();
   render();
-}
+};
 
 const resetGameState = () => {
   gameStates.currentPlayer = 'X';
@@ -43,7 +43,7 @@ const resetGameState = () => {
   gameStates.gameOver = false;
   resultDiv.textContent = '';
   gameStates.moveHistory = [];
-}
+};
 
 const undoMove = () => {
   const hasHistory = gameStates.moveHistory.length > 0;
@@ -53,11 +53,10 @@ const undoMove = () => {
     const prevMove = gameStates.moveHistory.pop();
     if (prevMove !== undefined) {
       gameStates.board[prevMove] = '';
-      gameStates.currentPlayer = gameStates.board[prevMove] === 'X' ? 'O' : 'X';
     }
     render();
   }
-}
+};
 
 const render = () => {
   gameContainer.innerHTML = '';
@@ -71,7 +70,7 @@ const render = () => {
     cell.addEventListener('click', () => handleClick(index));
     gameContainer.appendChild(cell);
   });
-}
+};
 render();
 
 const handleClick = (index) => {
@@ -90,7 +89,7 @@ const handleClick = (index) => {
       makeComputerMove();
     }
   }
-}
+};
 
 const endGame = (winner) => {
   if (winner === 'tie') {
@@ -108,7 +107,7 @@ const endGame = (winner) => {
     }
   }
   gameStates.gameOver = true;
-}
+};
 
 const makeComputerMove = () => {
   const emptyCells = gameStates.board.reduce((acc, cell, index) => {
@@ -119,13 +118,15 @@ const makeComputerMove = () => {
   const winningMove = checkWinningMove('O');
   const blockingMove = checkWinningMove('X');
 
-  let moveIndex;
+  let moveIndex = null;
   if (winningMove) {
     moveIndex = winningMove;
-  } else if (blockingMove) {
+  }
+  if (blockingMove) {
     moveIndex = blockingMove;
   } else {
-    moveIndex = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    const randomIndex = Math.floor(Math.random() * emptyCells.length);
+    moveIndex = emptyCells[randomIndex];
   }
 
   gameStates.board[moveIndex] = 'O';
@@ -138,54 +139,73 @@ const makeComputerMove = () => {
   } else {
     switchPlayer();
   }
-}
+};
 
 const switchPlayer = () => {
   gameStates.currentPlayer = gameStates.currentPlayer === 'X' ? 'O' : 'X';
-}
+};
+
+const checkPlayer = (position, player) => {
+  return gameStates.board[position] === player;
+};
+
+const checkEmpty = (position) => {
+  return gameStates.board[position] === '';
+};
 
 const checkWinningMove = (player) => {
   for (const combination of WINNING_COMB) {
-    const [a, b, c] = combination;
-    const isPlayerA = gameStates.board[a] === player;
-    const isPlayerB = gameStates.board[b] === player;
-    const isPlayerC = gameStates.board[c] === player;
+    const [cellA, cellB, cellC] = combination;
 
-    const isEmptyA = gameStates.board[a] === '';
-    const isEmptyB = gameStates.board[b] === '';
-    const isEmptyC = gameStates.board[c] === '';
+    const selectPlayer = {
+      A: checkPlayer(cellA, player),
+      B: checkPlayer(cellB, player),
+      C: checkPlayer(cellC, player),
+    };
 
-    if (isPlayerA && isPlayerB && isEmptyC) {
-      return c;
+    const empty = {
+      A: checkEmpty(cellA),
+      B: checkEmpty(cellB),
+      C: checkEmpty(cellC),
+    };
+
+    const winCondition = {
+      1: selectPlayer['A'] && selectPlayer['B'] && empty['C'],
+      2: selectPlayer['A'] && selectPlayer['C'] && empty['B'],
+      3: selectPlayer['B'] && selectPlayer['C'] && empty['A'],
+    };
+
+    if (winCondition['1']) {
+      return cellC;
     }
-    if (isPlayerA && isPlayerC && isEmptyB) {
-      return b;
+    if (winCondition['2']) {
+      return cellB;
     }
-    if (isPlayerB && isPlayerC && isEmptyA) {
-      return a;
+    if (winCondition['3']) {
+      return cellA;
     }
   }
 
   return null;
-}
+};
 
 const checkWinner = () => {
   for (const combination of WINNING_COMB) {
-    const [a, b, c] = combination;
-    const cellA = gameStates.board[a];
-    const cellB = gameStates.board[b];
-    const cellC = gameStates.board[c];
+    const [cellA, cellB, cellC] = combination;
+    const charA = gameStates.board[cellA];
+    const charB = gameStates.board[cellB];
+    const charC = gameStates.board[cellC];
 
-    const isWinningCombination = cellA && cellA === cellB && cellA === cellC;
+    const isWinningCombination = charA && charA === charB && charA === charC;
 
     if (isWinningCombination) {
-      return cellA;
+      return charA;
     }
   }
 
   const isBoardFull = gameStates.board.every((cell) => cell !== '');
   return isBoardFull ? 'tie' : null;
-}
+};
 
 showRulesBtn.addEventListener('click', showRulesModal);
 closeRulesBtn.addEventListener('click', hideRulesModal);
