@@ -121,8 +121,7 @@ const makeComputerMove = () => {
   let moveIndex = null;
   if (winningMove) {
     moveIndex = winningMove;
-  }
-  if (blockingMove) {
+  } else if (blockingMove) {
     moveIndex = blockingMove;
   } else {
     const randomIndex = Math.floor(Math.random() * emptyCells.length);
