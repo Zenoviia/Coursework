@@ -71,12 +71,17 @@ const render = () => {
 render();
 
 const handleClick = (index) => {
-  if (gameStates.gameOver || gameStates.board[index] !== '') return;
+  const isEmpty = gameStates.board[index] === '';
+  if (gameStates.gameOver || !isEmpty) return;
 
   gameStates.board[index] = gameStates.currentPlayer;
   gameStates.moveHistory.push(index);
-  render();
 
+  render();
+  checkGameStatus();
+};
+
+const checkGameStatus = () => {
   const winner = checkWinner();
   if (winner) {
     endGame(winner);
