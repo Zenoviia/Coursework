@@ -119,16 +119,29 @@ const endGame = (winner) => {
   gameStates.gameOver = true;
 };
 
-const makeComputerMove = () => {
-  const emptyCells = gameStates.board.reduce((acc, cell, index) => {
+const findEmptyCell = () => {
+  const emtyCells = gameStates.board.reduce((acc, cell, index) => {
     if (cell === '') acc.push(index);
     return acc;
   }, []);
+  return emtyCells;
+};
 
+const updateComputerStatus = () => {
+  const winner = checkWinner();
+  if (winner) {
+    endGame(winner);
+  } else {
+    switchPlayer();
+  }
+};
+
+const makeComputerMove = () => {
+  const emptyCells = findEmptyCell();
   const winningMove = checkWinningMove('O');
   const blockingMove = checkWinningMove('X');
-
   let moveIndex = null;
+
   if (winningMove) {
     moveIndex = winningMove;
   } else if (blockingMove) {
@@ -140,14 +153,9 @@ const makeComputerMove = () => {
 
   gameStates.board[moveIndex] = 'O';
   gameStates.moveHistory.push(moveIndex);
-  render();
 
-  const winner = checkWinner();
-  if (winner) {
-    endGame(winner);
-  } else {
-    switchPlayer();
-  }
+  render();
+  updateComputerStatus();
 };
 
 const switchPlayer = () => {
