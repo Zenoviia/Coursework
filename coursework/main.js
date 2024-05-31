@@ -191,14 +191,18 @@ const checkWinningMove = (player) => {
 const checkWinner = () => {
   for (const combination of WINNING_COMB) {
     const [cellA, cellB, cellC] = combination;
-    const charA = gameStates.board[cellA];
-    const charB = gameStates.board[cellB];
-    const charC = gameStates.board[cellC];
 
-    const isWinningCombination = charA && charA === charB && charA === charC;
+    const chars = {
+      A: gameStates.board[cellA],
+      B: gameStates.board[cellB],
+      C: gameStates.board[cellC],
+    };
+
+    const isWinningCombination =
+      chars['A'] && chars['A'] === chars['B'] && chars['A'] === chars['C'];
 
     if (isWinningCombination) {
-      return charA;
+      return chars['A'];
     }
   }
 
