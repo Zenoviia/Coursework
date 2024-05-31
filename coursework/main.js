@@ -78,10 +78,10 @@ const handleClick = (index) => {
   gameStates.moveHistory.push(index);
 
   render();
-  checkGameStatus();
+  updateGameStatus();
 };
 
-const checkGameStatus = () => {
+const updateGameStatus = () => {
   const winner = checkWinner();
   if (winner) {
     endGame(winner);
@@ -93,20 +93,28 @@ const checkGameStatus = () => {
   }
 };
 
+const displayTie = () => {
+  resultDiv.textContent = 'It`s a tie!';
+  gameStates.ties++;
+  tiesSpan.textContent = gameStates.ties;
+};
+
+const displayWinner = (winner) => {
+  resultDiv.textContent = `${winner} won!`;
+  if (winner === 'X') {
+    gameStates.xWins++;
+    xWinsSpan.textContent = gameStates.xWins;
+  } else {
+    gameStates.oWins++;
+    oWinsSpan.textContent = gameStates.oWins;
+  }
+};
+
 const endGame = (winner) => {
   if (winner === 'tie') {
-    resultDiv.textContent = 'It`s a tie!';
-    gameStates.ties++;
-    tiesSpan.textContent = gameStates.ties;
+    displayTie();
   } else {
-    resultDiv.textContent = `${winner} won!`;
-    if (winner === 'X') {
-      gameStates.xWins++;
-      xWinsSpan.textContent = gameStates.xWins;
-    } else {
-      gameStates.oWins++;
-      oWinsSpan.textContent = gameStates.oWins;
-    }
+    displayWinner(winner);
   }
   gameStates.gameOver = true;
 };
