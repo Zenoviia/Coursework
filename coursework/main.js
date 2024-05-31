@@ -86,6 +86,10 @@ const handleClick = (index) => {
   updateGameStatus();
 };
 
+const switchPlayer = () => {
+  gameStates.currentPlayer = gameStates.currentPlayer === 'X' ? 'O' : 'X';
+};
+
 const updateGameStatus = () => {
   const winner = checkWinner();
   if (winner) {
@@ -161,10 +165,6 @@ const makeComputerMove = () => {
 
   render();
   updateComputerStatus();
-};
-
-const switchPlayer = () => {
-  gameStates.currentPlayer = gameStates.currentPlayer === 'X' ? 'O' : 'X';
 };
 
 const checkPlayer = (position, player) => {
