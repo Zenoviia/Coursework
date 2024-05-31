@@ -45,15 +45,12 @@ const resetGameState = () => {
   gameStates.moveHistory = [];
 };
 
-const undoMove = () => {
-  const hasHistory = gameStates.moveHistory.length > 0;
-  if (hasHistory && !gameStates.gameOver) {
-    const lastMove = gameStates.moveHistory.pop();
-    gameStates.board[lastMove] = '';
-    const prevMove = gameStates.moveHistory.pop();
-    if (prevMove !== undefined) {
-      gameStates.board[prevMove] = '';
-    }
+const undoTwoMoves = () => {
+  const { moveHistory, board, gameOver } = gameStates;
+  const hasHistory = moveHistory.length > 0;
+  if (hasHistory && !gameOver) {
+    board[moveHistory.pop()] = '';
+    board[moveHistory.pop()] = '';
     render();
   }
 };
@@ -213,7 +210,7 @@ const checkWinner = () => {
 showRulesBtn.addEventListener('click', showRulesModal);
 closeRulesBtn.addEventListener('click', hideRulesModal);
 restartBtn.addEventListener('click', restartGame);
-undoBtn.addEventListener('click', undoMove);
+undoBtn.addEventListener('click', undoTwoMoves);
 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') {
