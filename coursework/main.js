@@ -32,10 +32,25 @@ const hideRulesModal = () => {
   rulesModal.style.display = 'none';
 };
 
-const restartGame = () => {
-  resetGameState();
-  render();
+const createCell = (value, index) => {
+  const cell = document.createElement('div');
+  cell.classList.add('cell');
+  cell.textContent = value;
+  if (value !== '') {
+    cell.style.backgroundColor = '#DCDCDC';
+  }
+  cell.addEventListener('click', () => handleClick(index));
+  return cell;
 };
+
+const render = () => {
+  gameContainer.innerHTML = '';
+  gameStates.board.forEach((value, index) => {
+    const cell = createCell(value, index);
+    gameContainer.appendChild(cell);
+  });
+};
+render();
 
 const resetGameState = () => {
   gameStates.currentPlayer = 'X';
@@ -43,6 +58,11 @@ const resetGameState = () => {
   gameStates.gameOver = false;
   resultDiv.textContent = '';
   gameStates.moveHistory = [];
+};
+
+const restartGame = () => {
+  resetGameState();
+  render();
 };
 
 const undoTwoMoves = () => {
@@ -54,21 +74,6 @@ const undoTwoMoves = () => {
     render();
   }
 };
-
-const render = () => {
-  gameContainer.innerHTML = '';
-  gameStates.board.forEach((value, index) => {
-    const cell = document.createElement('div');
-    cell.classList.add('cell');
-    cell.textContent = value;
-    if (value !== '') {
-      cell.style.backgroundColor = '#DCDCDC';
-    }
-    cell.addEventListener('click', () => handleClick(index));
-    gameContainer.appendChild(cell);
-  });
-};
-render();
 
 const handleClick = (index) => {
   const isEmpty = gameStates.board[index] === '';
